@@ -12,8 +12,7 @@
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
+    [ApiController]    
     public class RegionController : ControllerBase
     {
         private readonly IRegionRepository regionRepository;
@@ -26,6 +25,7 @@
         }
 
         [HttpGet]
+        [Authorize(Roles = "Reader")]
         public async Task<IActionResult> Get()
         {
             var region = await regionRepository.GetAllAsync();
@@ -34,6 +34,7 @@
         }
 
         [HttpGet("{Id:Guid}")]
+        [Authorize(Roles = "Reader")]
         public async Task<IActionResult> GetById([FromRoute] Guid Id)
         {
             var regionDomainModel = await regionRepository.GetByIdAsync(Id);
@@ -48,6 +49,7 @@
 
         [HttpPost]
         [ValidationModel]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
             var regionDomainModel = this.mapper.Map<Region>(addRegionRequestDto);
@@ -62,6 +64,7 @@
         }
 
         [HttpPut("{Id:Guid}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Update([FromRoute] Guid Id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
             //Map to Domain Model to DTO
@@ -78,6 +81,7 @@
         }
 
         [HttpDelete("{Id:Guid}")]
+        [Authorize(Roles = "Writer, Reader")]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid Id)
         {
             var regionDomainModel = await regionRepository.DeleteAsync(Id);
